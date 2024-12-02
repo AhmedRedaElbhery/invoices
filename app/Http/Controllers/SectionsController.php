@@ -18,6 +18,12 @@ class SectionsController extends Controller
         return view("sections/sections", compact("sections"));
     }
 
+    public static function report()
+    {
+        $sections = sections::all();
+        return $sections;
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -20,6 +20,12 @@ class ProductsController extends Controller
         return view("/product.product", compact("products", "sections"));
     }
 
+    public static function report()
+    {
+        $products = Products::all();
+        return $products;
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -7,6 +7,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SectionsController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -75,9 +76,14 @@ Route::post('/products_destroy', [ProductsController::class, 'destroy'])->name('
 Route::post('/products_update', [ProductsController::class, 'update'])->name('products.update');
 
 
+Route::get('/reports', [ReportController::class, 'index'])->name('reports');
+Route::get('/reports_search', [ReportController::class, 'search'])->name('reports_search');
 
 
-//Route::get('/reports', [InvoicesController::class, ''])->name('reports');
+
+Route::get('/report_clint', [ReportController::class, 'report_clints'])->name('report_clint');
+Route::get('/search_clients', [ReportController::class, 'search_clients'])->name('search_clients');
+
 
 Route::group(['middelware' => ['auth']], function () {
     Route::resource('roles', RoleController::class);
@@ -86,7 +92,42 @@ Route::group(['middelware' => ['auth']], function () {
 
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+
+    $chartjs = app()->chartjs
+    ->name('barChartTest')
+    ->type('bar')
+    ->size(['width' => 400, 'height' => 200])
+    ->labels(['Label x', 'Label y'])
+    ->datasets([
+        [
+            "label" => "نسبه الفواتير الغير المدفوعه",
+            'backgroundColor' => ['red'],
+            'data' => [ number_format(\App\Models\Invoices::where('Value_Status', '2')->count() / \App\Models\Invoices::count() * 100 ,1),0]
+        ],
+        [
+            "label" => "نسبه الفواتير مدفوعه",
+            'backgroundColor' => ['green','green'],
+            'data' => [0,number_format(\App\Models\Invoices::where('Value_Status', '0')->count() / \App\Models\Invoices::count() * 100 ,1)]
+        ],
+    ])
+    ->options([]);
+
+
+    $chartjs2 = app()->chartjs
+        ->name('pieChartTest')
+        ->type('pie')
+        ->size(['width' => 400, 'height' => 200])
+        ->labels(['الفواتير المدفوعه', 'الفواتير الغير مدفوعه' , 'الفواتبر المدفوعه جزئيا'])
+        ->datasets([
+            [
+                'backgroundColor' => ['green', 'red', 'yellow'],
+            
+                'data' => [number_format(\App\Models\Invoices::where('Value_Status', '0')->count() / \App\Models\Invoices::count() * 100) , number_format(\App\Models\Invoices::where('Value_Status', '2')->count() / \App\Models\Invoices::count() * 100) ,number_format(\App\Models\Invoices::where('Value_Status', '1')->count() / \App\Models\Invoices::count() * 100)]
+            ]
+        ])
+        ->options([]);
+
+    return view('dashboard', compact('chartjs' , 'chartjs2'));
 })->middleware(['auth'])->name('dashboard');
 
 require __DIR__ . '/auth.php';

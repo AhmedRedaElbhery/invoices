@@ -97,9 +97,9 @@ class InvoicesController extends Controller
 
         }
 
-
-
-
+        $user = \App\Models\User::get();
+        $invoice = Invoices::latest()->first();
+        Notification::send($user, new \App\Notifications\add_invoice($invoice));
         return redirect("/invoices");
     }
 
@@ -286,5 +286,34 @@ class InvoicesController extends Controller
     public function export()
     {
         return Excel::download(new invoiceExport, 'users.xlsx');
+    }
+
+    public static function reports($id)
+    {
+       
+        $data = Invoices::where('invoice_number' , $id->invoice_number)->with('sections')->get();
+        return ($data);
+    }
+
+    public static function clint_reports($request)
+    {
+        
+        $data = Invoices::where([
+            ['section_id', '=', $request->Section],
+            ['product', '=', $request->product],
+        ])->get();
+        
+        if ($request->start_at != '') {
+            $data = $data->where('invoice_Date', '>=', $request->start_at);
+        }
+        
+        if ($request->end_at != '') {
+            $data = $data->where('due_date', '<=',$request->end_at);
+        }
+
+        //$data = $data->all();
+        //dd($data);
+
+        return ($data);
     }
 }
