@@ -20,26 +20,64 @@
             
             <div class="nav nav-item  navbar-nav-right ml-auto">
                 
-               
+            
+                            
                 <div class="dropdown nav-item main-header-notification">
-
+                @if(Auth::user()->role_name == ["owner"])
                     <a class="new nav-link" href="#">
                         <svg xmlns="http://www.w3.org/2000/svg" class="header-icon-svgs" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span class=" pulse"></span>
                     </a>
-                    <div class="dropdown-menu">
+                   
 
-                        @foreach(Auth()->user()->unreadNotifications as $notification)
-                        
-                            <a href="{{route('invoices.details', ['id'=>$notification->data['id'] ] ) }}" class="btn btn-primary w-100 mt-1" style="height: 65px;">
-                                <div class="text-light" >
-                                    نم اضافه فاتوره بواسطه {{ $notification->data['user'] }}
-                                </div>
-                                <p style="font-size: 12px;">{{$notification->created_at}}</p>
-                            </a>
+                    <div class="dropdown-menu " style="height: 400px; overflow:auto;">
+                        <div class="bg-primary text-light p-3" style="height: 60px;"> Notifications </div>
+                        @foreach (auth()->user()->unreadNotifications as $notification)
+                            <div class="main-notification-list Notification-scroll">
+                                <a class="d-flex p-3 border-bottom"
+                                    href="{{route('invoices.details',['id'=>$notification->data['id']])}}">
+                                    <div class="notifyimg bg-pink">
+                                        <i class="la la-file-alt text-white"></i>
+                                    </div>
+                                    <div class="mr-3">
+                                        <h5 class="notification-label mb-1"> تم اضافه فاتوره بواسطه
+                                            {{ $notification->data['user'] }}
+                                        </h5>
+                                        <div class="notification-subtext">{{ $notification->created_at }}</div>
+                                    </div>
+                                </a>
+                            </div>
                         @endforeach
                     </div>
+                    @endif
                 </div>
-                
+
+                <div class="dropdown main-profile-menu nav nav-item nav-link">
+                    <a class="profile-user d-flex" href=""><img alt=""
+                            src="{{ URL::asset('assets/img/faces/6.jpg') }}"></a>
+                    <div class="dropdown-menu">
+                        <div class="main-header-profile bg-primary p-3">
+                            <div class="d-flex wd-100p">
+                                <div class="main-img-user"><img alt="" src="{{ URL::asset('assets/img/faces/6.jpg') }}"
+                                        class=""></div>
+                                <div class="mr-3 my-auto">
+                                    <h6>{{ Auth::user()->name }}</h6><span>{{ Auth::user()->email }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="dropdown-item" href=""><i class="bx bx-user-circle"></i>Profile</a>
+                        <a class="dropdown-item" href=""><i class="bx bx-cog"></i> Edit Profile</a>
+                        <a class="dropdown-item" href=""><i class="bx bxs-inbox"></i>Inbox</a>
+                        <a class="dropdown-item" href=""><i class="bx bx-envelope"></i>Messages</a>
+                        <a class="dropdown-item" href=""><i class="bx bx-slider-alt"></i> Account Settings</a>
+                        <a class="dropdown-item" href="{{ route('logout') }}"
+                            onclick="event.preventDefault();document.getElementById('logout-form').submit();"><i
+                                class="bx bx-log-out"></i>تسجيل خروج</a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+
+                    </div>
+                </div>
                 
                 <div class="dropdown main-header-message right-toggle">
                     <a class="nav-link pr-0" data-toggle="sidebar-left" data-target=".sidebar-left">
@@ -47,6 +85,8 @@
                     </a>
                 </div>
             </div>
+
+            
         </div>
     </div>
 </div>
