@@ -1,0 +1,6 @@
+php artisan migrate
+php artisan db:seed --class=PermissionTableSeeder
+php artisan db:seed --class=CreateAdminUserSeeder
+
+run these commands then u will have owner account to login and can controll in every thing
+you can regester a new account it will be as user not owner and will not have all permitions as owner
